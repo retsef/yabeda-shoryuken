@@ -2,19 +2,34 @@
 
 module Yabeda
   module Shoryuken
-    # Client middleware to count number of enqueued jobs
-    class ClientMiddleware
-      def call(worker, queue, sqs_msg, _body)
-        labels = Yabeda::Shoryuken.labelize(worker, sqs_msg, sqs_msg['queue'] || queue)
-        Yabeda.shoryuken_jobs_enqueued_total.increment(labels)
+    # Shoryuken worker middleware
+    class ServerMiddleware
 
-        if sqs_msg['queue'] && sqs_msg['queue'] != queue
-          labels = Yabeda::Shoryuken.labelize(worker, sqs_msg, queue)
-          Yabeda.shoryuken_jobs_rerouted_total.increment({ from_queue: queue, to_queue: sqs_msg['queue'],
-                                                           **labels.except(:queue), })
+      # rubocop: disable Metrics/AbcSize, :
+      def call(worker, queue, sqs_msg, body)
+        custom_tags = Yabeda::Shoryuken.custom_tags(worker, sqs_msg).to_h
+        labels = Yabeda::Shoryuken.labelize(worker, sqs_msg, queue, body).merge(custom_tags)
+        start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        begin
+          Yabeda.shoryuken_job_latency.measure(labels, worker.latency)
+          Yabeda::Shoryuken.jobs_started_at[labels][worker['jid']] = start
+          Yabeda.with_tags(**custom_tags)
+          Yabeda.shoryuken_jobs_success_total.increment(labels)
+        rescue Exception # rubocop: disable Lint/RescueException
+          Yabeda.shoryuken_jobs_failed_total.increment(labels)
+          raise
+        ensure
+          Yabeda.shoryuken_job_runtime.measure(labels, elapsed(start))
+          Yabeda.shoryuken_jobs_executed_total.increment(labels)
+          Yabeda::Shoryuken.jobs_started_at[labels].delete(worker['jid'])
         end
+      end
+      # rubocop: enable Metrics/AbcSize:
 
-        yield
+      private
+
+      def elapsed(start)
+        (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start).round(3)
       end
     end
   end

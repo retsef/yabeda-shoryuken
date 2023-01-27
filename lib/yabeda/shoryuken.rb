@@ -85,17 +85,23 @@ module Yabeda
     end
 
     class << self
-      def labelize(worker, job, queue)
-        { queue: queue, worker: worker_class(worker, job) }
+      def labelize(worker, sqs_msg, queue, body = nil)
+        { queue: queue, worker: worker_name(worker, sqs_msg, body) }
       end
 
-      def worker_class(worker, job)
-        if defined?(ActiveJob::QueueAdapters::ShoryukenAdapter::JobWrapper) &&
-           (worker.is_a?(ActiveJob::QueueAdapters::ShoryukenAdapter::JobWrapper) || worker == ActiveJob::QueueAdapters::ShoryukenAdapter::JobWrapper)
-          return job['wrapped'].to_s
-        end
+      def worker_name(worker_class, sqs_msg, body = nil)
+        if Shoryuken.active_job? \
+          && !sqs_msg.is_a?(Array) \
+          && sqs_msg.message_attributes \
+          && sqs_msg.message_attributes['shoryuken_class'] \
+          && sqs_msg.message_attributes['shoryuken_class'][:string_value] \
+          == ActiveJob::QueueAdapters::ShoryukenAdapter::JobWrapper.to_s \
+          && body
 
-        (worker.is_a?(String) || worker.is_a?(Class) ? worker : worker.class).to_s
+          "ActiveJob/#{body['job_class']}"
+        else
+          worker_class.to_s
+        end
       end
 
       def custom_tags(worker, job)
