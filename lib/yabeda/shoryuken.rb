@@ -104,10 +104,10 @@ module Yabeda
         end
       end
 
-      def custom_tags(worker, job)
+      def custom_tags(worker, sqs_msg)
         return {} unless worker.respond_to?(:yabeda_tags)
 
-        worker.method(:yabeda_tags).arity.zero? ? worker.yabeda_tags : worker.yabeda_tags(*job['args'])
+        worker.method(:yabeda_tags).arity.zero? ? worker.yabeda_tags : worker.yabeda_tags(*sqs_msg.attributes)
       end
 
       # Hash of hashes containing all currently running jobs' start timestamps
