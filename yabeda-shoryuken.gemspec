@@ -4,7 +4,7 @@ require_relative 'lib/yabeda/shoryuken/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'yabeda-shoryuken'
-  spec.version = Yabeda::Cloudwatch::VERSION
+  spec.version = Yabeda::Shoryuken::VERSION
   spec.authors = ['Roberto Scinocca']
   spec.email = ['roberto.scinocca@hey.com']
 
@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'shoryuken'
   spec.add_dependency 'rack'
+  spec.add_dependency 'anyway_config', '>= 1.3', '< 3'
   spec.add_dependency 'yabeda', '~> 0.10'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
