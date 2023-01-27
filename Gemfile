@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-# Specify your gem's dependencies in yabeda-shoryuken.gemspec
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+
+# Specify your gem's dependencies in yabeda-cloudwatch.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+group :development, :test do
+  gem 'rake', '~> 13.0'
 
-gem "rspec", "~> 3.0"
-
-gem "rubocop", "~> 1.21"
+  gem 'rubocop'
+  gem 'rubocop-rspec'
+end

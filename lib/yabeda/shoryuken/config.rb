@@ -4,6 +4,7 @@ require 'anyway'
 
 module Yabeda
   module Shoryuken
+    # Yabeda Shoryuken config
     class Config < ::Anyway::Config
       config_name :yabeda_sidekiq
 

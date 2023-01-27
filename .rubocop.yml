@@ -6,12 +6,16 @@ AllCops:
   TargetRubyVersion: 2.3
 
 Metrics/BlockLength:
+  Max: 50
   Exclude:
     - "Gemfile"
     - "spec/**/*"
 
 Metrics/MethodLength:
   Max: 25
+
+Layout/LineLength:
+  Enabled: 150
 
 # Allow to use let!
 RSpec/LetSetup:
