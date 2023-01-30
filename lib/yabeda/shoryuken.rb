@@ -25,10 +25,8 @@ module Yabeda
 
       group :shoryuken
 
-      counter :jobs_enqueued_total, tags: %i[queue worker],
-                                    comment: 'A counter of the total number of jobs shoryuken enqueued.'
-      counter :jobs_rerouted_total, tags: %i[from_queue to_queue worker],
-                                    comment: 'A counter of the total number of rerouted jobs shoryuken enqueued.'
+      counter :messages_enqueued_total, tags: %i[queue],
+                                        comment: 'A counter of the total number of message shoryuken enqueued.'
 
       if config.declare_process_metrics # defaults to +::Shoryuken.server?+
         counter   :jobs_executed_total,  tags: %i[queue worker],
@@ -41,31 +39,14 @@ module Yabeda
         gauge     :running_job_runtime,  tags: %i[queue worker], aggregation: :max, unit: :seconds,
                                          comment: 'How long currently running jobs are running (useful for detection of hung jobs)'
 
-        histogram :job_latency, comment: 'The job latency, the difference in seconds between enqueued and running time',
-                                unit: :seconds, per: :job,
-                                tags: %i[queue worker],
-                                buckets: LONG_RUNNING_JOB_RUNTIME_BUCKETS
         histogram :job_runtime, comment: 'A histogram of the job execution time.',
                                 unit: :seconds, per: :job,
                                 tags: %i[queue worker],
                                 buckets: LONG_RUNNING_JOB_RUNTIME_BUCKETS
       end
 
-      # Metrics not specific for current Shoryuken process, but representing state of the whole Shoryuken installation (queues, processes, etc)
-      # You can opt-out from collecting these by setting YABEDA_SIDEKIQ_COLLECT_CLUSTER_METRICS to falsy value (+no+ or +false+)
-      if config.collect_cluster_metrics # defaults to +::Shoryuken.server?+
-        gauge     :queue_latency,        tags: %i[queue], aggregation: :most_recent,
-                                         comment: 'The queue latency, the difference in seconds since the oldest job in the queue was enqueued'
-      end
-
       collect do
         Yabeda::Shoryuken.track_max_job_runtime if ::Shoryuken.server?
-
-        next unless config.collect_cluster_metrics
-
-        ::Shoryuken::Queue.all.each do |queue|
-          shoryuken_queue_latency.set({ queue: queue.name }, queue.latency)
-        end
       end
     end
 
@@ -85,12 +66,12 @@ module Yabeda
     end
 
     class << self
-      def labelize(worker, sqs_msg, queue, body = nil)
-        { queue: queue, worker: worker_name(worker, sqs_msg, body) }
+      def labelize(worker_class, sqs_msg, queue, body = nil)
+        { queue: queue, worker: worker_name(worker_class, sqs_msg, body) }
       end
 
       def worker_name(worker_class, sqs_msg, body = nil)
-        if Shoryuken.active_job? \
+        if ::Shoryuken.active_job? \
           && !sqs_msg.is_a?(Array) \
           && sqs_msg.message_attributes \
           && sqs_msg.message_attributes['shoryuken_class'] \

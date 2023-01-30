@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'shoryuken'
   spec.add_dependency 'yabeda', '~> 0.10'
 
+  spec.add_development_dependency 'aws-sdk-sqs', '>= 0'
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
