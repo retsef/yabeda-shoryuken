@@ -26,7 +26,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.3'
 
   spec.add_dependency 'anyway_config', '>= 1.3', '< 3'
-  spec.add_dependency 'rack'
   spec.add_dependency 'shoryuken'
   spec.add_dependency 'yabeda', '~> 0.10'
 
