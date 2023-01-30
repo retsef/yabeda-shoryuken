@@ -4,7 +4,6 @@ module Yabeda
   module Shoryuken
     # Client middleware to count number of enqueued jobs
     class ClientMiddleware
-
       def call(options = {})
         queue_url = options[:queue_url]
 

@@ -44,7 +44,7 @@ Metrics representing state of current Shoryuken worker process and stats of exec
 
 Metrics collected where jobs are being pushed to queues (everywhere):
 
-- Total number of enqueued messages: `shoryuken_messages_enqueued_total_count` (segmented by `queue` and `worker` class name)
+- Total number of enqueued messages: `shoryuken_messages_enqueued_total_count` (segmented by `queue`)
 
 ## Custom tags
 
