@@ -11,10 +11,6 @@ RSpec.describe Yabeda::Shoryuken do
 
   let(:sample_body) { SecureRandom.uuid }
 
-  before do
-
-  end
-
   describe 'plain Shoryuken jobs' do
     it 'counts enqueues' do
       Yabeda.shoryuken.messages_enqueued_total.values.clear # This is a hack
