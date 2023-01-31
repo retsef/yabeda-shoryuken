@@ -1,6 +1,6 @@
 # Yabeda::Shoryuken
 
-[![Gem Version](https://badge.fury.io/rb/yabeda-shoryuken.svg)](https://rubygems.org/gems/yabeda-cloudwatch)
+[![Gem Version](https://badge.fury.io/rb/yabeda-shoryuken.svg)](https://rubygems.org/gems/yabeda-shoryuken)
 
 Yabeda plugin for easy [Shoryuken] gem collect metrics from your application
 
