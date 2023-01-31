@@ -50,4 +50,3 @@ class FailingPlainJob
     raise 'Badaboom'
   end
 end
-

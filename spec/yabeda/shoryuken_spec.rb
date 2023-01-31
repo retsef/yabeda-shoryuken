@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Yabeda::Shoryuken do
+  let(:sample_body) { SecureRandom.uuid }
+
   it 'has a version number' do
     expect(Yabeda::Shoryuken::VERSION).not_to be nil
   end
@@ -8,8 +10,6 @@ RSpec.describe Yabeda::Shoryuken do
   it 'configures middlewares' do
     expect(Shoryuken.client_middleware.entries).to include(have_attributes(klass: Yabeda::Shoryuken::ClientMiddleware))
   end
-
-  let(:sample_body) { SecureRandom.uuid }
 
   describe 'plain Shoryuken jobs' do
     it 'counts enqueues' do
@@ -32,7 +32,7 @@ RSpec.describe Yabeda::Shoryuken do
       SamplePlainJob.perform_async(sample_body)
       begin
         FailingPlainJob.perform_async(sample_body)
-      rescue Exception
+      rescue StandardError
         nil
       end
 
@@ -61,7 +61,7 @@ RSpec.describe Yabeda::Shoryuken do
 
       begin
         SampleComplexJob.perform_async(sample_body)
-      rescue Exception
+      rescue StandardError
         nil
       end
 
@@ -95,7 +95,7 @@ RSpec.describe Yabeda::Shoryuken do
       sleep 0.013 # Ruby can sleep less than requested
       begin
         FailingPlainJob.perform_async(sample_body)
-      rescue Exception
+      rescue StandardError
         nil
       end
       Yabeda.collectors.each(&:call)

@@ -3,7 +3,9 @@
 require 'bundler/setup'
 require 'shoryuken'
 
-module Shoryuken::CLI; end # Fake that we're a worker to test worker-specific things
+# Fake that we're a worker to test worker-specific things
+module Shoryuken::CLI; end
+
 require 'yabeda/shoryuken'
 require 'yabeda/rspec'
 
@@ -50,7 +52,6 @@ RSpec.configure do |config|
 
   config.before do
     Shoryuken.sqs_client = instance_double('Aws::Sqs::Client').tap do |client|
-
       %w[default sample_plain sample_long_running sample_complex failing_plain].each do |queue_name|
         allow(client).to receive(:get_queue_url)
           .with({ queue_name: queue_name })

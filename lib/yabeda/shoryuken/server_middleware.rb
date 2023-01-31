@@ -4,7 +4,7 @@ module Yabeda
   module Shoryuken
     # Shoryuken worker middleware
     class ServerMiddleware
-      # rubocop: disable Metrics/AbcSize, :
+      # rubocop: disable Metrics/AbcSize, Style/ExplicitBlockArgument
       def call(worker, queue, sqs_msg, body)
         jid = SecureRandom.uuid
 
@@ -27,7 +27,7 @@ module Yabeda
           Yabeda::Shoryuken.jobs_started_at[labels].delete(jid)
         end
       end
-      # rubocop: enable Metrics/AbcSize:
+      # rubocop: enable Metrics/AbcSize, Style/ExplicitBlockArgument
 
       private
 
