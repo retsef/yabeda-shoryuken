@@ -32,7 +32,6 @@ RSpec.configure do |config|
 
   config.before(:all) do
     Yabeda::Shoryuken.config.declare_process_metrics = true
-    Yabeda::Shoryuken.config.collect_cluster_metrics = true
 
     Shoryuken.options[:concurrency] = 1
     Shoryuken.options[:delay]       = 1.0
